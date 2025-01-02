@@ -1,0 +1,77 @@
+package quiz
+
+import (
+	"fmt"
+	"math-quiz/internal/service"
+	"math-quiz/internal/view/layout"
+)
+
+type QuestionProps struct {
+	ID          int
+	QuestionLen int
+	Question    *service.QuizQuestion
+	BaseURL     string
+}
+
+templ Question(props QuestionProps) {
+	@layout.Base(layout.BaseProps{Title: "Математический тренажёр", BaseURL: props.BaseURL}) {
+		<div class="flex h-screen">
+			<form id="back" class="flex basis-1/12 justify-end">
+				<button formaction={ fmt.Sprintf("%s/quiz/%d", props.BaseURL, props.ID-1) } class="btn btn-md" disabled?={ props.ID==0 }>&lt;</button>
+			</form>
+			<div class="basis-10/12">
+				<div class="flex justify-center">
+					<h1 class="text-5xl mb-5">{ props.Question.Question }</h1>
+				</div>
+				<form action="" method="get">
+					<div class="flex justify-center">
+						for i,v:=range props.Question.Answers {
+							<button
+								class={ answerButtonClass(props, i) }
+								id={ fmt.Sprintf("button-%d", i) }
+								formaction={ answerButtonAction(props, i) }
+							>
+								{ v }
+							</button>
+						}
+					</div>
+				</form>
+				<div class="flex justify-center pt-20">{ fmt.Sprintf("%d из %d", props.ID+1, props.QuestionLen) }</div>
+			</div>
+			<form id="back" class="flex basis-1/12 justify-start">
+				if props.ID < props.QuestionLen-1 {
+					<button formaction={ fmt.Sprintf("%s/quiz/%d", props.BaseURL, props.ID+1) } class="btn btn-md" disabled?={ !props.Question.IsAnswered || props.ID >= props.QuestionLen-1 }>&gt;</button>
+				} else if props.ID == props.QuestionLen -1 {
+					<button formaction={ fmt.Sprintf("%s/results", props.BaseURL) } class="btn btn-lg" disabled?={ !props.Question.IsAnswered }>&gt;</button>
+				}
+			</form>
+		</div>
+	}
+}
+
+func answerButtonAction(props QuestionProps, buttonID int) string {
+	if props.Question.IsAnswered {
+		return ""
+	}
+	return fmt.Sprintf("%s/quiz/%d/%d", props.BaseURL, props.ID, buttonID)
+}
+
+func answerButtonClass(props QuestionProps, answerID int) string {
+	var (
+		correctAnswer string
+		selection     string
+	)
+	if props.Question.IsAnswered {
+		if props.Question.CorrectAnswerID == answerID {
+			correctAnswer = "bg-green-700"
+		}
+		if props.Question.SelectedAnswerID == answerID {
+			if props.Question.IsCorrect {
+				selection = "border-green-700"
+			} else {
+				selection = "border-red-700 text-red-700"
+			}
+		}
+	}
+	return fmt.Sprintf("btn btn-outline m-2 btn-circle btn-md border-6 %s %s", correctAnswer, selection)
+}

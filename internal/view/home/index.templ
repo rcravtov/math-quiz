@@ -1,0 +1,12 @@
+package home
+
+import "math-quiz/internal/view/layout"
+
+type HomeProps struct {
+	BaseURL string
+}
+
+templ Index(props HomeProps) {
+	@layout.Base(layout.BaseProps{Title: "Математический тренажёр", BaseURL: props.BaseURL}) {
+	}
+}
