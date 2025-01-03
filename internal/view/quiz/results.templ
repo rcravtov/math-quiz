@@ -3,7 +3,6 @@ package quiz
 import (
 	"fmt"
 	"math-quiz/internal/service"
-	"math-quiz/internal/view/layout"
 )
 
 type ResultProps struct {
@@ -13,16 +12,14 @@ type ResultProps struct {
 }
 
 templ Results(props ResultProps) {
-	@layout.Base(layout.BaseProps{Title: "Математический тренажёр", BaseURL: props.BaseURL}) {
-		<div>
-			<div class="pb-5 text-lg text-primary">
-				<h1 class="pb-5 text-3xl">{ fmt.Sprintf(" Оценка: %d", props.Result.Grade) }</h1>
-				<h1 class="text-green-700">{ fmt.Sprintf(" Правильных ответов: %d", props.Result.CorrectAnswers) }</h1>
-				<h1 class="text-red-700">{ fmt.Sprintf(" Неправильных ответов: %d", props.Result.IncorrectAnswers) }</h1>
-			</div>
-			for _,q:=range props.Questions {
-				<div class={ "text", templ.KV("text-green-700", q.IsCorrect), templ.KV("text-red-700", !q.IsCorrect) }>{ fmt.Sprintf("%s = %s", q.Question, q.Answers[q.CorrectAnswerID]) }</div>
-			}
+	<div>
+		<div class="pb-5 text-lg text-primary">
+			<h1 class="pb-5 text-3xl">{ fmt.Sprintf(" Оценка: %d", props.Result.Grade) }</h1>
+			<h1 class="text-green-700">{ fmt.Sprintf(" Правильных ответов: %d", props.Result.CorrectAnswers) }</h1>
+			<h1 class="text-red-700">{ fmt.Sprintf(" Неправильных ответов: %d", props.Result.IncorrectAnswers) }</h1>
 		</div>
-	}
+		for _,q:=range props.Questions {
+			<div class={ "text", templ.KV("text-green-700", q.IsCorrect), templ.KV("text-red-700", !q.IsCorrect) }>{ fmt.Sprintf("%s = %s", q.Question, q.Answers[q.CorrectAnswerID]) }</div>
+		}
+	</div>
 }

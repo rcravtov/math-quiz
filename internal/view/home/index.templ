@@ -8,5 +8,6 @@ type HomeProps struct {
 
 templ Index(props HomeProps) {
 	@layout.Base(layout.BaseProps{Title: "Математический тренажёр", BaseURL: props.BaseURL}) {
+		<div id="content"></div>
 	}
 }
