@@ -61,22 +61,24 @@ func (qs *QuizService) NewSessionID() string {
 	return uuid.New().String()
 }
 
-func (qs *QuizService) GenerateAddSubQuestions(sessionID string) {
+func (qs *QuizService) GenerateAddSubQuestions(sessionID string) *Session {
 	session := NewSession()
 	for range qs.LenQuestions {
 		question := NewAddSubQuestion(4)
 		session.Questions = append(session.Questions, question)
 	}
 	qs.AddSession(sessionID, session)
+	return session
 }
 
-func (qs *QuizService) GenerateMultDivQuestions(sessionID string) {
+func (qs *QuizService) GenerateMultDivQuestions(sessionID string) *Session {
 	session := NewSession()
 	for range qs.LenQuestions {
 		question := NewMultDivQuestion(4)
 		session.Questions = append(session.Questions, question)
 	}
 	qs.AddSession(sessionID, session)
+	return session
 }
 
 func (qs *QuizService) AddSession(sessionID string, session *Session) {

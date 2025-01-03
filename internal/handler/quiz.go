@@ -21,7 +21,7 @@ func (h quizHandler) handleStartAddSub(w http.ResponseWriter, r *http.Request) e
 	if !h.service.SessionExists(sessionID) {
 		sessionID = h.service.NewSessionID()
 	}
-	h.service.GenerateAddSubQuestions(sessionID)
+	session := h.service.GenerateAddSubQuestions(sessionID)
 
 	newCookie := &http.Cookie{
 		Name:  "session-id",
@@ -29,9 +29,13 @@ func (h quizHandler) handleStartAddSub(w http.ResponseWriter, r *http.Request) e
 	}
 	http.SetCookie(w, newCookie)
 
-	url := fmt.Sprintf("%s/quiz/0", h.BaseURL)
-	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
-	return nil
+	props := quiz.QuestionProps{
+		ID:          0,
+		QuestionLen: session.GetQuestionLen(),
+		Question:    session.Questions[0],
+		BaseURL:     h.BaseURL,
+	}
+	return quiz.Question(props).Render(r.Context(), w)
 }
 
 func (h quizHandler) handleStartMultDiv(w http.ResponseWriter, r *http.Request) error {
@@ -40,7 +44,7 @@ func (h quizHandler) handleStartMultDiv(w http.ResponseWriter, r *http.Request) 
 	if !h.service.SessionExists(sessionID) {
 		sessionID = h.service.NewSessionID()
 	}
-	h.service.GenerateMultDivQuestions(sessionID)
+	session := h.service.GenerateMultDivQuestions(sessionID)
 
 	newCookie := &http.Cookie{
 		Name:  "session-id",
@@ -48,9 +52,13 @@ func (h quizHandler) handleStartMultDiv(w http.ResponseWriter, r *http.Request) 
 	}
 	http.SetCookie(w, newCookie)
 
-	url := fmt.Sprintf("%s/quiz/0", h.BaseURL)
-	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
-	return nil
+	props := quiz.QuestionProps{
+		ID:          0,
+		QuestionLen: session.GetQuestionLen(),
+		Question:    session.Questions[0],
+		BaseURL:     h.BaseURL,
+	}
+	return quiz.Question(props).Render(r.Context(), w)
 }
 
 func (h quizHandler) handleQuiz(w http.ResponseWriter, r *http.Request) error {
@@ -78,7 +86,12 @@ func (h quizHandler) handleQuiz(w http.ResponseWriter, r *http.Request) error {
 	}
 	questionLen := session.GetQuestionLen()
 
-	props := quiz.QuestionProps{ID: id, QuestionLen: questionLen, Question: question, BaseURL: h.BaseURL}
+	props := quiz.QuestionProps{
+		ID:          id,
+		QuestionLen: questionLen,
+		Question:    question,
+		BaseURL:     h.BaseURL,
+	}
 	return quiz.Question(props).Render(r.Context(), w)
 }
 
@@ -119,16 +132,19 @@ func (h quizHandler) handleAnswer(w http.ResponseWriter, r *http.Request) error 
 		fmt.Println(err)
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("%s/quiz/%d", h.BaseURL, id), http.StatusTemporaryRedirect)
-	return nil
+	props := quiz.QuestionProps{
+		ID:          id,
+		QuestionLen: session.GetQuestionLen(),
+		Question:    question,
+		BaseURL:     h.BaseURL,
+	}
+	return quiz.Question(props).Render(r.Context(), w)
 }
 
 func (h quizHandler) handleResults(w http.ResponseWriter, r *http.Request) error {
 
 	session := h.sessionFromRequest(r)
 	if session == nil {
-		url := fmt.Sprintf("%s/", h.BaseURL)
-		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 		return nil
 	}
 
