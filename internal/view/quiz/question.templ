@@ -13,11 +13,8 @@ type QuestionProps struct {
 }
 
 templ Question(props QuestionProps) {
-	<div class="flex h-screen">
-		<form id="back" class="flex basis-1/12 justify-end">
-			<button hx-get={ fmt.Sprintf("%s/quiz/%d", props.BaseURL, props.ID-1) } hx-target="#content" class="btn btn-md" disabled?={ props.ID==0 }>&lt;</button>
-		</form>
-		<div class="basis-10/12">
+	<div class="flex h-screen justify-center">
+		<div>
 			<div class="flex justify-center">
 				<h1 class="text-5xl mb-5">{ props.Question.Question }</h1>
 			</div>
@@ -37,13 +34,6 @@ templ Question(props QuestionProps) {
 			</form>
 			<div class="flex justify-center pt-20">{ fmt.Sprintf("%d из %d", props.ID+1, props.QuestionLen) }</div>
 		</div>
-		<form id="back" class="flex basis-1/12 justify-start">
-			if props.ID < props.QuestionLen-1 {
-				<button hx-get={ fmt.Sprintf("%s/quiz/%d", props.BaseURL, props.ID+1) } hx-target="#content" class="btn btn-md" disabled?={ !props.Question.IsAnswered || props.ID >= props.QuestionLen-1 }>&gt;</button>
-			} else if props.ID == props.QuestionLen -1 {
-				<button hx-get={ fmt.Sprintf("%s/results", props.BaseURL) } hx-target="#content" class="btn btn-lg" disabled?={ !props.Question.IsAnswered }>&gt;</button>
-			}
-		</form>
 	</div>
 }
 

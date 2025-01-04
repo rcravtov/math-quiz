@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"math-quiz/internal/service"
 	"math-quiz/internal/view/quiz"
 	"net/http"
@@ -65,24 +64,18 @@ func (h quizHandler) handleQuiz(w http.ResponseWriter, r *http.Request) error {
 
 	session := h.sessionFromRequest(r)
 	if session == nil {
-		url := fmt.Sprintf("%s/", h.BaseURL)
-		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
-		return nil
+		return service.ErrSessionNotFound
 	}
 
 	idStr := chi.URLParam(r, "question_id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		url := fmt.Sprintf("%s/", h.BaseURL)
-		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
-		return nil
+		return err
 	}
 
 	question, err := session.GetQuestionByID(id)
 	if err != nil {
-		url := fmt.Sprintf("%s/", h.BaseURL)
-		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
-		return nil
+		return err
 	}
 	questionLen := session.GetQuestionLen()
 
@@ -99,43 +92,45 @@ func (h quizHandler) handleAnswer(w http.ResponseWriter, r *http.Request) error 
 
 	session := h.sessionFromRequest(r)
 	if session == nil {
-		url := fmt.Sprintf("%s/", h.BaseURL)
-		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
-		return nil
+		return service.ErrSessionNotFound
 	}
 
 	idStr := chi.URLParam(r, "question_id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		url := fmt.Sprintf("%s/", h.BaseURL)
-		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
-		return nil
+		return err
 	}
 
 	question, err := session.GetQuestionByID(id)
 	if err != nil {
-		url := fmt.Sprintf("%s/", h.BaseURL)
-		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
-		return nil
+		return err
 	}
 
 	answerIDStr := chi.URLParam(r, "answer_id")
 	answerID, err := strconv.Atoi(answerIDStr)
 	if err != nil {
-		url := fmt.Sprintf("%s/", h.BaseURL)
-		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
-		return nil
+		return err
 	}
 
 	err = question.SetAnswer(answerID)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
 
+	// show results after last question
+	if id == session.GetQuestionLen()-1 {
+		return h.handleResults(w, r)
+	}
+
+	nextID := id + 1
+	nextQuestion, err := session.GetQuestionByID(nextID)
+	if err != nil {
+
+	}
 	props := quiz.QuestionProps{
-		ID:          id,
+		ID:          nextID,
 		QuestionLen: session.GetQuestionLen(),
-		Question:    question,
+		Question:    nextQuestion,
 		BaseURL:     h.BaseURL,
 	}
 	return quiz.Question(props).Render(r.Context(), w)

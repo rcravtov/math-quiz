@@ -19,7 +19,14 @@ templ Results(props ResultProps) {
 			<h1 class="text-red-700">{ fmt.Sprintf(" Неправильных ответов: %d", props.Result.IncorrectAnswers) }</h1>
 		</div>
 		for _,q:=range props.Questions {
-			<div class={ "text", templ.KV("text-green-700", q.IsCorrect), templ.KV("text-red-700", !q.IsCorrect) }>{ fmt.Sprintf("%s = %s", q.Question, q.Answers[q.CorrectAnswerID]) }</div>
+			<div class={ "text", templ.KV("text-green-700", q.IsCorrect), templ.KV("text-red-700", !q.IsCorrect) }>
+				{ fmt.Sprintf("%s = %s", q.Question, q.Answers[q.SelectedAnswerID]) }
+				if !q.IsCorrect {
+					<span>
+						{ fmt.Sprintf("правильный ответ %s", q.Answers[q.CorrectAnswerID]) }
+					</span>
+				}
+			</div>
 		}
 	</div>
 }
