@@ -18,7 +18,7 @@ templ Question(props QuestionProps) {
 			<div class="flex justify-center">
 				<h1 class="text-5xl mb-5">{ props.Question.Question }</h1>
 			</div>
-			<form action="" method="get">
+			<form>
 				<div class="flex justify-center">
 					for i,v:=range props.Question.Answers {
 						<button
@@ -26,15 +26,38 @@ templ Question(props QuestionProps) {
 							id={ fmt.Sprintf("button-%d", i) }
 							hx-get={ answerButtonAction(props, i) }
 							hx-target="#content"
+							hx-disabled-elt={ answerButtonIDs(props) }
+							hx-indicator="#indicator"
 						>
 							{ v }
 						</button>
 					}
 				</div>
 			</form>
-			<div class="flex justify-center pt-20">{ fmt.Sprintf("%d из %d", props.ID+1, props.QuestionLen) }</div>
+			<div class="flex justify-center pt-20">
+				<span class="ml-5">{ fmt.Sprintf("%d из %d", props.ID+1, props.QuestionLen) }</span>
+				<span id="indicator" class="htmx-indicator loading loading-spinner text-primary ml-5"></span>
+			</div>
+			<progress
+				max={ fmt.Sprintf("%d", props.QuestionLen) }
+				value={ fmt.Sprintf("%d", props.ID+1) }
+				class="progress progress-primary"
+			>
+				TEST
+			</progress>
 		</div>
 	</div>
+}
+
+func answerButtonIDs(props QuestionProps) string {
+	result := ""
+	for i := range props.Question.Answers {
+		if result != "" {
+			result = result + " ,"
+		}
+		result = result + fmt.Sprintf("#button-%d", i)
+	}
+	return result
 }
 
 func answerButtonAction(props QuestionProps, buttonID int) string {
