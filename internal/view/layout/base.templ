@@ -33,7 +33,8 @@ templ header(props BaseProps) {
 		</div>
 		<div class="flex-1">
 			<ul class="menu menu-horizontal">
-				<li><a hx-get={ fmt.Sprintf("%s/startaddsub", props.BaseURL) } hx-target="#content">Сложение и вычитание</a></li>
+				<li><a hx-get={ fmt.Sprintf("%s/startaddsub1", props.BaseURL) } hx-target="#content">Сложение и вычитание до 10</a></li>
+				<li><a hx-get={ fmt.Sprintf("%s/startaddsub2", props.BaseURL) } hx-target="#content">Сложение и вычитание до 100</a></li>
 				<li><a hx-get={ (fmt.Sprintf("%s/startmultdiv", props.BaseURL)) } hx-target="#content">Умножение и деление</a></li>
 			</ul>
 		</div>

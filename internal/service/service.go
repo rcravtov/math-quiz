@@ -61,10 +61,10 @@ func (qs *QuizService) NewSessionID() string {
 	return uuid.New().String()
 }
 
-func (qs *QuizService) GenerateAddSubQuestions(sessionID string) *Session {
+func (qs *QuizService) GenerateAddSubQuestions(sessionID string, max int) *Session {
 	session := NewSession()
 	for range qs.LenQuestions {
-		question := NewAddSubQuestion(4)
+		question := NewAddSubQuestion(4, max)
 		session.Questions = append(session.Questions, question)
 	}
 	qs.AddSession(sessionID, session)

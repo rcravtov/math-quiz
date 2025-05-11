@@ -14,13 +14,36 @@ type quizHandler struct {
 	BaseURL string
 }
 
-func (h quizHandler) handleStartAddSub(w http.ResponseWriter, r *http.Request) error {
+func (h quizHandler) handleStartAddSub10(w http.ResponseWriter, r *http.Request) error {
 
 	sessionID := h.sessionIDFromRequest(r)
 	if !h.service.SessionExists(sessionID) {
 		sessionID = h.service.NewSessionID()
 	}
-	session := h.service.GenerateAddSubQuestions(sessionID)
+	session := h.service.GenerateAddSubQuestions(sessionID, 10)
+
+	newCookie := &http.Cookie{
+		Name:  "session-id",
+		Value: sessionID,
+	}
+	http.SetCookie(w, newCookie)
+
+	props := quiz.QuestionProps{
+		ID:          0,
+		QuestionLen: session.GetQuestionLen(),
+		Question:    session.Questions[0],
+		BaseURL:     h.BaseURL,
+	}
+	return quiz.Question(props).Render(r.Context(), w)
+}
+
+func (h quizHandler) handleStartAddSub100(w http.ResponseWriter, r *http.Request) error {
+
+	sessionID := h.sessionIDFromRequest(r)
+	if !h.service.SessionExists(sessionID) {
+		sessionID = h.service.NewSessionID()
+	}
+	session := h.service.GenerateAddSubQuestions(sessionID, 100)
 
 	newCookie := &http.Cookie{
 		Name:  "session-id",

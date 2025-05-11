@@ -23,7 +23,8 @@ func RegisterRoutes(r *chi.Mux, deps Dependencies) {
 
 	r.Get("/", handler(home.handleIndex))
 
-	r.Get("/startaddsub", handler(quiz.handleStartAddSub))
+	r.Get("/startaddsub1", handler(quiz.handleStartAddSub10))
+	r.Get("/startaddsub2", handler(quiz.handleStartAddSub100))
 	r.Get("/startmultdiv", handler(quiz.handleStartMultDiv))
 	r.Get("/quiz/{question_id}", handler(quiz.handleQuiz))
 	r.Get("/quiz/{question_id}/{answer_id}", handler(quiz.handleAnswer))

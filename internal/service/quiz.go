@@ -33,7 +33,7 @@ func (q *QuizQuestion) SetAnswer(answerID int) error {
 	return nil
 }
 
-func NewAddSubQuestion(lenAnswers int) *QuizQuestion {
+func NewAddSubQuestion(lenAnswers int, max int) *QuizQuestion {
 	var (
 		left   = 0
 		right  = 0
@@ -44,8 +44,8 @@ func NewAddSubQuestion(lenAnswers int) *QuizQuestion {
 	sign := signs[rand.Intn(len(signs))]
 
 	for {
-		left = rand.Intn(10) + 1
-		right = rand.Intn(10) + 1
+		left = rand.Intn(max) + 1
+		right = rand.Intn(max) + 1
 
 		if sign == "+" {
 			result = left + right
@@ -53,12 +53,12 @@ func NewAddSubQuestion(lenAnswers int) *QuizQuestion {
 			result = left - right
 		}
 
-		if result >= 0 && result <= 10 {
+		if result >= 0 && result <= max {
 			break
 		}
 	}
 
-	answers, correctAnswerID := generateAnswers(lenAnswers, 10, result)
+	answers, correctAnswerID := generateAnswers(lenAnswers, 100, result)
 
 	q := &QuizQuestion{
 		Question:        fmt.Sprintf("%d %s %d", left, sign, right),
